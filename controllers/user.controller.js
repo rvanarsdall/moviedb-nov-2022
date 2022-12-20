@@ -7,7 +7,7 @@
 const router = require("express").Router();
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
-
+const jwt = require("jsonwebtoken");
 router.post("/signup", async (req, res) => {
   try {
     console.log(req.body);
@@ -21,10 +21,14 @@ router.post("/signup", async (req, res) => {
     });
     // 2. Try Catch - we want to try and save the data but if we get an error we want to send back the error message.
     const newUser = await user.save();
-
+    // After we generate a NEW user we can generate a token
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT, {
+      expiresIn: 60 * 60 * 24,
+    });
     res.json({
       user: newUser,
       message: "Success: User Created",
+      token: token,
     });
   } catch (error) {
     res.json({ message: error.message });
@@ -47,13 +51,21 @@ router.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("User Not Found");
     }
-    const isPasswordMatch = user.password === req.body.password;
+    // user.password === req.body.password
+    const isPasswordMatch = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
     // Passwords do not match we throw an ERROR
     if (!isPasswordMatch) {
       throw new Error("Passwords Do Not Match");
     }
     // Pass all our checks
-    res.json({ user: user, message: "Success" });
+    const token = jwt.sign({ id: user._id }, process.env.JWT, {
+      expiresIn: 60 * 60 * 24,
+    });
+
+    res.json({ user: user, message: "Success", token: token });
   } catch (error) {
     res.json({ message: error.message });
   }

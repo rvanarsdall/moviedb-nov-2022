@@ -72,3 +72,32 @@ module.exports = mongoose.model("User", UserSchema);
 
 - They will take in user requests and send back information
 - Controllers will do the work and will Create, Read, Update, or Delete from the Database.
+
+## Bcrypt - Hashing Passwords
+
+- this will encrypt our password
+- `npm i bycrypt` in order to use it in your files.
+- to hash that password you can use this example
+
+```js
+bcrypt.hashSync(req.body.password, 10);
+```
+
+- you will need to use `bycrypt.compare()` to compare the passwords: this will return true or false
+
+```js
+const isPasswordMatch = await bcrypt.compare(req.body.password, user.password);
+```
+
+## JWT - JSON Web Token
+
+- used to help identify and authenticate a user
+- should be given in user login and signup
+- jw.sign has 3 arguements: Payload, encrypt and decrypt message, option sets
+- Example code:
+
+```js
+const token = jwt.sign({ id: newUser._id }, "secret_message_here", {
+  expiresIn: 60 * 60 * 24,
+});
+```
