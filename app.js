@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const userController = require("./controllers/user.controller");
 const movieController = require("./controllers/movie.controller");
-const validateSession = require("./middleware/validate-session")
+// const validateSession = require("./middleware/validate-session")
 // console.log(process.env);
 
 // ! Connecting to the DB
